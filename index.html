@@ -16,49 +16,84 @@
   }
 
   .container {
-    background: rgba(0,0,0,0.4);
-    padding: 40px;
-    border-radius: 12px;
+    background: rgba(0,0,0,0.5);
+    padding: 40px 30px;
+    border-radius: 16px;
     text-align: center;
-    width: 320px;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    width: 350px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+    transition: transform 0.3s;
+  }
+
+  .container:hover {
+    transform: translateY(-5px);
   }
 
   h2 {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    font-size: 24px;
+    letter-spacing: 1px;
   }
 
   input {
     width: 100%;
-    padding: 12px;
-    border-radius: 8px;
+    padding: 14px;
+    border-radius: 12px;
     border: none;
     margin-bottom: 20px;
     font-size: 16px;
+    outline: none;
   }
 
   button {
     width: 100%;
-    padding: 12px;
+    padding: 14px;
     border: none;
-    border-radius: 8px;
-    background-color: #ff8c00;
+    border-radius: 12px;
+    background: linear-gradient(90deg, #ff8c00, #ffa733);
     color: #fff;
     font-size: 16px;
     cursor: pointer;
     transition: 0.3s;
+    position: relative;
+    overflow: hidden;
   }
 
   button:hover {
-    background-color: #ffa733;
+    background: linear-gradient(90deg, #ffa733, #ffb84d);
+  }
+
+  button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .spinner {
+    border: 3px solid rgba(255,255,255,0.3);
+    border-top: 3px solid #fff;
+    border-radius: 50%;
+    width: 18px;
+    height: 18px;
+    animation: spin 1s linear infinite;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -9px 0 0 -9px;
+    display: none;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 
   .alert {
-    padding: 10px;
+    padding: 12px;
     margin-bottom: 20px;
-    border-radius: 6px;
+    border-radius: 8px;
     display: none;
     font-weight: bold;
+    font-size: 14px;
   }
 
   .alert.success { background-color: #4caf50; color: #fff; }
@@ -74,14 +109,18 @@
   <div id="alert" class="alert"></div>
 
   <input id="number" placeholder="Enter number with country code, e.g. +971501234567">
-  <button onclick="makeCall()">Call</button>
+  <button id="callBtn" onclick="makeCall()">Call
+    <div class="spinner" id="spinner"></div>
+  </button>
 </div>
 
 <script>
 async function makeCall() {
     const alertBox = document.getElementById("alert");
-    alertBox.style.display = 'none';
+    const btn = document.getElementById("callBtn");
+    const spinner = document.getElementById("spinner");
 
+    alertBox.style.display = 'none';
     let number = document.getElementById("number").value.trim();
 
     if (!number.startsWith('+')) {
@@ -90,6 +129,10 @@ async function makeCall() {
         alertBox.style.display = 'block';
         return;
     }
+
+    // Show spinner & disable button
+    spinner.style.display = 'block';
+    btn.disabled = true;
 
     try {
         const res = await fetch("/call", { 
@@ -112,6 +155,9 @@ async function makeCall() {
         alertBox.textContent = "❌ Network or server error: " + err.message;
         alertBox.className = "alert error";
         alertBox.style.display = 'block';
+    } finally {
+        spinner.style.display = 'none';
+        btn.disabled = false;
     }
 }
 </script>
