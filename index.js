@@ -1,3 +1,4 @@
+// index.js
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -8,25 +9,23 @@ import { fileURLToPath } from 'url';
 
 dotenv.config();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Config from .env
+// Load config from .env
 const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
 const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER;
 const ULTRAVOX_API_KEY = process.env.ULTRAVOX_API_KEY;
 const PORT = process.env.PORT || 5000;
 
-// Helper for __dirname in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Serve index.html
-app.use(express.static(__dirname));
-
-// Ultravox helper
+// ---------------------------
+// Helper: create Ultravox call
+// ---------------------------
 async function createUltravoxCall() {
     return new Promise((resolve, reject) => {
         const config = {
@@ -70,9 +69,11 @@ async function createUltravoxCall() {
     });
 }
 
-// API route
+// ---------------------------
+// API Route: POST /call
+// ---------------------------
 app.post('/call', async (req, res) => {
-    const { number } = req.body;
+    let { number } = req.body;
 
     if (!number || !number.startsWith('+')) {
         return res.status(400).json({ success: false, error: 'Number must include country code starting with +' });
@@ -95,11 +96,19 @@ app.post('/call', async (req, res) => {
     }
 });
 
-// Fallback for all other routes: serve index.html
-app.get('*', (req, res) => {
+// ---------------------------
+// Serve frontend (index.html)
+// ---------------------------
+app.use(express.static(__dirname)); // serve static files
+
+// Fallback route for SPA / any other path
+app.get(/.*/, (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
+// ---------------------------
+// Start server
+// ---------------------------
 app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
