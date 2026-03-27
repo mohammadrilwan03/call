@@ -3,6 +3,8 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import twilio from 'twilio';
 import https from 'https';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 dotenv.config();
 
@@ -17,7 +19,14 @@ const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER;
 const ULTRAVOX_API_KEY = process.env.ULTRAVOX_API_KEY;
 const PORT = process.env.PORT || 5000;
 
-// Helper: create Ultravox call
+// Helper for __dirname in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Serve index.html
+app.use(express.static(__dirname));
+
+// Ultravox helper
 async function createUltravoxCall() {
     return new Promise((resolve, reject) => {
         const config = {
@@ -61,7 +70,7 @@ async function createUltravoxCall() {
     });
 }
 
-// API route to initiate call
+// API route
 app.post('/call', async (req, res) => {
     const { number } = req.body;
 
@@ -84,6 +93,11 @@ app.post('/call', async (req, res) => {
         console.error('Error during call:', err.message);
         res.status(500).json({ success: false, error: err.message });
     }
+});
+
+// Fallback for all other routes: serve index.html
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 app.listen(PORT, () => {
