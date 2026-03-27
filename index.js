@@ -16,7 +16,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Load config from .env
+// Load config
 const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
 const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
 const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER;
@@ -51,12 +51,8 @@ async function createUltravoxCall() {
             res.on('end', () => {
                 try {
                     const json = JSON.parse(data);
-                    if (!json.joinUrl) {
-                        console.error("Full Ultravox response:", json);
-                        reject(new Error('No joinUrl returned from Ultravox API'));
-                    } else {
-                        resolve(json);
-                    }
+                    if (!json.joinUrl) reject(new Error('No joinUrl returned'));
+                    else resolve(json);
                 } catch (e) {
                     reject(new Error('Failed to parse Ultravox response: ' + data));
                 }
@@ -73,7 +69,7 @@ async function createUltravoxCall() {
 // API Route: POST /call
 // ---------------------------
 app.post('/call', async (req, res) => {
-    let { number } = req.body;
+    const { number } = req.body;
 
     if (!number || !number.startsWith('+')) {
         return res.status(400).json({ success: false, error: 'Number must include country code starting with +' });
@@ -99,10 +95,10 @@ app.post('/call', async (req, res) => {
 // ---------------------------
 // Serve frontend (index.html)
 // ---------------------------
-app.use(express.static(__dirname)); // serve static files
+app.use(express.static(path.join(__dirname)));
 
-// Fallback route for SPA / any other path
-app.get(/.*/, (req, res) => {
+// Fallback route for SPA / any unknown path
+app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
 });
 
@@ -110,5 +106,5 @@ app.get(/.*/, (req, res) => {
 // Start server
 // ---------------------------
 app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
+    console.log(`🚀 Server running on port ${PORT}`);
 });

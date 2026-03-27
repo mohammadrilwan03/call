@@ -92,7 +92,7 @@ async function makeCall() {
     }
 
     try {
-        const res = await fetch("https://call-pnjd.onrender.com/call", { 
+        const res = await fetch("/call", { 
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ number })
