@@ -1,168 +1,179 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Talk With Rilwan's Assistant</title>
-<style>
-  /* Body and animated background */
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(120deg, #1e3c72, #2a5298, #6dd5fa);
-    background-size: 400% 400%;
-    animation: gradientBG 15s ease infinite;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Talk With Rilwan's Assistant</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
 
-  @keyframes gradientBG {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-  }
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #fff;
+    }
 
-  /* Glass-like container */
-  .container {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    padding: 45px 35px;
-    border-radius: 25px;
-    width: 380px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
-    text-align: center;
-    border: 2px solid rgba(255,255,255,0.2);
-    transition: transform 0.3s, box-shadow 0.3s;
-  }
+    /* 🔥 TOP ALERT (NEW CHANGE) */
+    .alert {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 15px 25px;
+      border-radius: 10px;
+      font-weight: 600;
+      display: none;
+      text-align: center;
+      color: #fff;
+      z-index: 9999;
+      min-width: 300px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
 
-  .container:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 25px 60px rgba(0,0,0,0.6);
-  }
+    .alert.success {
+      background-color: rgba(0, 255, 240, 0.2);
+      color: #00fff0;
+    }
 
-  h2 {
-    color: #fff;
-    margin-bottom: 10px;
-    font-size: 28px;
-    letter-spacing: 1px;
-  }
+    .alert.error {
+      background-color: rgba(255, 0, 0, 0.2);
+      color: #ff4c4c;
+    }
 
-  p {
-    color: #f0f0f0;
-    font-size: 14px;
-    margin-bottom: 25px;
-  }
+    .container {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 40px 30px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 15px 25px rgba(0,0,0,0.4);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
 
-  /* Input field */
-  input {
-    width: 100%;
-    padding: 14px 16px;
-    border-radius: 12px;
-    border: none;
-    margin-bottom: 20px;
-    font-size: 16px;
-    outline: none;
-    background: rgba(255,255,255,0.2);
-    color: #fff;
-    transition: 0.3s;
-  }
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 5px;
+      color: #00fff0;
+    }
 
-  input::placeholder {
-    color: rgba(255, 255, 255, 0.7);
-  }
+    h2 {
+      font-size: 18px;
+      font-weight: 400;
+      margin-bottom: 25px;
+      color: rgba(255,255,255,0.7);
+    }
 
-  input:focus {
-    background: rgba(255,255,255,0.3);
-    box-shadow: 0 0 15px rgba(255,255,255,0.4);
-  }
+    input[type="text"] {
+      width: 100%;
+      padding: 15px 20px;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+      margin-bottom: 20px;
+      background-color: rgba(255,255,255,0.1);
+      color: #fff;
+    }
 
-  /* Button styling */
-  button {
-    width: 100%;
-    padding: 14px;
-    border-radius: 12px;
-    border: none;
-    font-size: 16px;
-    font-weight: 600;
-    color: #fff;
-    cursor: pointer;
-    background: linear-gradient(90deg, #ff416c, #ff4b2b);
-    transition: 0.4s;
-    position: relative;
-    overflow: hidden;
-  }
+    input[type="text"]::placeholder {
+      color: rgba(255,255,255,0.6);
+    }
 
-  button:hover {
-    background: linear-gradient(90deg, #ff4b2b, #ff416c);
-    transform: scale(1.05);
-    box-shadow: 0 8px 25px rgba(255,75,43,0.6);
-  }
+    input[type="text"]:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0,255,240,0.3);
+      background-color: rgba(255,255,255,0.15);
+    }
 
-  /* Spinner inside button */
-  .spinner {
-    border: 3px solid rgba(255,255,255,0.3);
-    border-top: 3px solid #fff;
-    border-radius: 50%;
-    width: 18px;
-    height: 18px;
-    animation: spin 1s linear infinite;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin: -9px 0 0 -9px;
-    display: none;
-  }
+    button {
+      background: #00fff0;
+      color: #0f2027;
+      padding: 15px 25px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
 
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
+    button:hover {
+      background: #0f2027;
+      color: #00fff0;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,255,240,0.3);
+    }
 
-  /* Alert */
-  .alert {
-    padding: 12px;
-    margin-bottom: 20px;
-    border-radius: 12px;
-    display: none;
-    font-weight: bold;
-    font-size: 14px;
-    text-align: center;
-    color: #fff;
-    transition: 0.3s;
-  }
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
 
-  .alert.success { background-color: rgba(76, 175, 80, 0.9); }
-  .alert.error { background-color: rgba(244, 67, 54, 0.9); }
-</style>
+    .spinner {
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top: 3px solid #fff;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      animation: spin 1s linear infinite;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin: -9px 0 0 -9px;
+      display: none;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
 </head>
 <body>
 
+<!-- 🔥 ALERT MOVED OUTSIDE -->
+<div id="alert" class="alert"></div>
+
 <div class="container">
+  <h1>Calling</h1>
   <h2>Talk With Rilwan's Assistant</h2>
-  <p>Enter the number with country code and press "Call" to start.</p>
 
-  <div id="alert" class="alert"></div>
+  <input id="number" type="text" placeholder="Enter number with country code e.g. +971501234567" />
 
-  <input id="number" placeholder="e.g. +971501234567">
-  <button id="callBtn" onclick="makeCall()">Call
+  <button id="callBtn" onclick="makeCall()">📞 Make Call
     <div class="spinner" id="spinner"></div>
   </button>
 </div>
 
 <script>
 async function makeCall() {
+    const numberInput = document.getElementById("number");
     const alertBox = document.getElementById("alert");
     const btn = document.getElementById("callBtn");
     const spinner = document.getElementById("spinner");
 
+    let number = numberInput.value.trim();
+
+    // Reset alert
     alertBox.style.display = 'none';
-    let number = document.getElementById("number").value.trim();
+    alertBox.textContent = '';
+    alertBox.classList.remove('success', 'error');
 
     if (!number.startsWith('+')) {
-        alertBox.textContent = "Please include the country code starting with +";
-        alertBox.className = "alert error";
-        alertBox.style.display = 'block';
+        showAlert("⚠️ Please include country code starting with +", "error");
         return;
     }
 
@@ -170,7 +181,7 @@ async function makeCall() {
     btn.disabled = true;
 
     try {
-        const res = await fetch("/call", { 
+        const res = await fetch("/call", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ number })
@@ -179,21 +190,29 @@ async function makeCall() {
         const data = await res.json();
 
         if (data.success) {
-            alertBox.textContent = "✅ Call initiated! SID: " + data.sid;
-            alertBox.className = "alert success";
+            showAlert(`✅ Call initiated!`, "success");
         } else {
-            alertBox.textContent = "❌ Error: " + data.error;
-            alertBox.className = "alert error";
+            showAlert(`❌ Error: ${data.error}`, "error");
         }
-        alertBox.style.display = 'block';
+
     } catch (err) {
-        alertBox.textContent = "❌ Network or server error: " + err.message;
-        alertBox.className = "alert error";
-        alertBox.style.display = 'block';
+        showAlert(`❌ Network error: ${err.message}`, "error");
     } finally {
         spinner.style.display = 'none';
         btn.disabled = false;
     }
+}
+
+// 🔥 ALERT FUNCTION (AUTO HIDE)
+function showAlert(message, type) {
+    const alertBox = document.getElementById("alert");
+    alertBox.textContent = message;
+    alertBox.className = "alert " + type;
+    alertBox.style.display = 'block';
+
+    setTimeout(() => {
+        alertBox.style.display = 'none';
+    }, 4000);
 }
 </script>
 
