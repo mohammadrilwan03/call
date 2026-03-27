@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Talk With Rilwan's Assistant</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #fff;
+      flex-direction: column;
+      padding: 20px;
+    }
+
+    /* Alert at top */
+    .alert {
+      width: 100%;
+      max-width: 400px;
+      padding: 15px;
+      border-radius: 10px;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 20px;
+      display: none;
+      color: #fff;
+    }
+
+    .alert.success {
+      background-color: rgba(0, 255, 240, 0.2);
+      color: #00fff0;
+    }
+
+    .alert.error {
+      background-color: rgba(255, 0, 0, 0.2);
+      color: #ff4c4c;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 40px 30px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 15px 25px rgba(0,0,0,0.4);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 5px;
+      color: #00fff0;
+    }
+
+    h2 {
+      font-size: 18px;
+      font-weight: 400;
+      margin-bottom: 25px;
+      color: rgba(255,255,255,0.7);
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 15px 20px;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+      margin-bottom: 20px;
+      background-color: rgba(255,255,255,0.1);
+      color: #fff;
+    }
+
+    input[type="text"]::placeholder {
+      color: rgba(255,255,255,0.6);
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0,255,240,0.3);
+      background-color: rgba(255,255,255,0.15);
+    }
+
+    button {
+      background: #00fff0;
+      color: #0f2027;
+      padding: 15px 25px;
+      font-size: 16px;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: #0f2027;
+      color: #00fff0;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,255,240,0.3);
+    }
+  </style>
+</head>
+<body>
+
+<div id="alert" class="alert"></div>
+
+<div class="container">
+  <h1>Calling</h1>
+  <h2>Talk With Rilwan's Assistant</h2>
+  <input id="number" type="text" placeholder="Enter number with country code e.g. +971501234567" />
+  <button onclick="makeCall()">📞 Make Call</button>
+</div>
+
+<script>
+async function makeCall() {
+    const numberInput = document.getElementById("number");
+    const alertBox = document.getElementById("alert");
+    let number = numberInput.value.trim();
+
+    // Reset alert
+    alertBox.style.display = 'none';
+    alertBox.textContent = '';
+    alertBox.classList.remove('success', 'error');
+
+    if (!number.startsWith('+')) {
+        alertBox.textContent = "⚠️ Please include the country code starting with +";
+        alertBox.classList.add('error');
+        alertBox.style.display = 'block';
+        return;
+    }
+
+    try {
+        const res = await fetch("http://localhost:5000/call", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ number })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+            alertBox.textContent = `✅ Call initiated!`;
+            alertBox.classList.add('success');
+            alertBox.style.display = 'block';
+        } else {
+            alertBox.textContent = `❌ Error: ${data.error}`;
+            alertBox.classList.add('error');
+            alertBox.style.display = 'block';
+        }
+    } catch (err) {
+        alertBox.textContent = `❌ Network or server error: ${err.message}`;
+        alertBox.classList.add('error');
+        alertBox.style.display = 'block';
+    }
+}
+</script>
+
+</body>
+</html>
